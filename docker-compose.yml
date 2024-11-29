@@ -1,0 +1,18 @@
+version: "3"
+services:
+  api_cocos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_cocos
+    
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "9001:9001"
+    env_file:
+      - .env
+    environment:
+      - TZ=UTC  # Establecer zona horaria a UTC
+      - PORT=9001
