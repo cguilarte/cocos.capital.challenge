@@ -86,3 +86,35 @@ CREATE INDEX idx_marketdata_date ON marketdata(date);`
 #### Índices compuestos para posibles escenarios de unión y filtrado
 `CREATE INDEX idx_orders_instrument_user ON orders(instrumentId, userId);
 CREATE INDEX idx_marketdata_instrument_date ON marketdata(instrumentId, date);`
+
+# Datos de la api
+
+- GET `http://localhost:9001/api/1/portfolio`
+- GET  `http://localhost:9001/api/instruments?query=Exportadora`
+- POST `http://localhost:9001/api/order`
+
+#### Ejemplo de orden de compra (BUY):
+
+```
+{
+    "userId": 1,
+    "instrumentId": 31,
+    "side": "BUY",
+    "type": "MARKET",
+    "quantity": 9
+}
+```
+
+#### Ejemplo de orden de venta (SELL):
+
+```
+{
+    "userId": 1,
+    "instrumentId": 38,
+    "side": "SELL",
+    "type": "LIMIT",
+    "quantity": 2,
+    "price": 400
+}
+```
+
