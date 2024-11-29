@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Api Coco capital",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cguilarte/cocos.capital.challenge"
+  },
   "scripts": {
     "start": "node dist/src/main.js",
     "start:dev": "tsnd --respawn src/main.ts",
@@ -28,6 +32,10 @@
     "node": ">=18.0.0",
     "npm": ">=9.3.0"
   },
+  "bugs": {
+    "url": "https://github.com/cguilarte/cocos.capital.challenge/issues"
+  },
+  "homepage": "https://github.com/cguilarte/cocos.capital.challenge#readme",
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
