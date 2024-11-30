@@ -1,48 +1,51 @@
 import path from 'path';
+import fs from 'fs';
 import winston from 'winston';
-import { config } from "../config";
+import { config } from '../config';
 
-const pathLog = path.join(__dirname, '..', '..', '..', '..', 'logs/');
-const { LOGGER, APPLICATION_NAME } = config.server;
+// Crear directorio de logs en la raíz del proyecto
+const pathLog = path.join(process.cwd(), 'logs');
+if (!fs.existsSync(pathLog)) {
+  fs.mkdirSync(pathLog, { recursive: true });
+}
 
-/* Transportes disponibles: https://github.com/winstonjs/winston/blob/master/docs/transports.md
-  Niveles de Logs:
-  error: 0
-  warn: 1
-  info: 2
-  verbose: 3
-  debug: 4
-  silly: 5 */
+// Configuración de variables del entorno
+const { LOGGER = false, APPLICATION_NAME = 'app' } = config.server;
+const LOG_LEVEL_CONSOLE = LOGGER ? 'error' : 'debug';
+const LOG_LEVEL_FILE = 'info';
 
-export default winston.createLogger({
+// Formato Reutilizable para el Logger
+const logFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.printf(({ level, message, timestamp }) =>
+    `[${level.toUpperCase()}]: ${timestamp} - ${message}`
+  )
+);
+
+// Crear instancia del Logger
+const logger = winston.createLogger({
   transports: [
+    // Transporte de Consola
     new winston.transports.Console({
-      level: LOGGER ? 'error' : 'debug',
+      level: LOG_LEVEL_CONSOLE,
       handleExceptions: true,
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple(),
+        logFormat
       ),
     }),
+    // Transporte de Archivo
     new winston.transports.File({
-      level: 'info',
+      level: LOG_LEVEL_FILE,
       handleExceptions: true,
-      format: winston.format.combine(
-        winston.format.colorize({ all: true }),
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        winston.format.simple(),
-        // eslint-disable-next-line arrow-body-style
-        winston.format.printf(({ level, message, timestamp }) => {
-          return `[${level
-            .replace('[39m', '')
-            .replace('[32m', '')
-            .replace('[31m', '')
-            .trim()}]: ${timestamp}  - ${message}`;
-        }),
-      ),
-      maxsize: 5120000, // 5 Mb
+      format: logFormat,
+      maxsize: 5 * 1024 * 1024, // 5MB
       maxFiles: 5,
-      filename: `${pathLog}${APPLICATION_NAME}.log`,
+      filename: path.join(pathLog, `${APPLICATION_NAME}.log`), // Usa path.join para asegurar compatibilidad
     }),
   ],
+  exitOnError: false, // Evita que el proceso termine en excepciones
 });
+
+// Exporta el logger
+export default logger;
